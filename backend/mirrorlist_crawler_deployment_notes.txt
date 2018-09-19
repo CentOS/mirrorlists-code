@@ -1,0 +1,180 @@
+makemirrorlists-combined.pl deployment notes
+============================================
+
+Features:
+- Creates mirrorlist files for all supported CentOS releases
+- Creates mirrorlist files for U.S. and Canada subdivisions
+- Including altarch
+- Including SIG content
+- Separate mirrorlists for IPv4 and IPv6
+- Survives master being unreachable (timestamps from master cached for 
+  up to 7 days)
+- Caches valid timestamp data from mirrors
+- Invalidates cached data when timestamp changes on master,
+  or after a specified time has passed since the last check
+- Fast discard of non-working mirrors (timeouts, lots of 404s etc)
+- Checks each mirror at least once using each protocol during each run,
+  if that mirror's URL is being considered for the list
+- Repos can be configured via database instead of hardcoding them
+- Code has been structured to make it easier to eventually check
+  https URLs as well
+
+Prerequisites:
+- perl
+- perl-DBI
+- perl-libwww-perl
+- perl-IO-Socket-INET6
+- perl-DBD-MySQL
+- perl-Socket6
+- Perhaps other packages as well as deps for the above
+- Updated CentOS geo_cc.pm module for U.S./Canada subdivision info
+  and for nearest countries / continent info
+- Write access to /home/centos-mirrorlists,
+  otherwise lists will be written to /tmp/centos-mirrorlists
+- IPv4 and IPv6 connectivity
+- MySQL(/MariaDB) database
+
+Database tables:
+- mirrors, unmodified except for some additional indexes. Here's the
+  full list at the moment:
+  PRIMARY KEY (`mirror_id`),
+  UNIQUE KEY `name` (`name`),
+  KEY `cc_idx` (`cc`),
+  KEY `continent_idx` (`continent`),
+  KEY `centos_code_idx` (`centos_code`),
+  KEY `altarch_idx` (`altarch`),
+  KEY `type_idx` (`Type`),
+  KEY `status_idx` (`status`),
+  KEY `http_idx` (`http`(25)),
+  KEY `locminor_idx` (`location-minor`)
+  KEY `https_idx` (`https`)
+- repos:
+	CREATE TABLE `repos` (
+	  `repo_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+	  `major_release` tinyint(3) unsigned NOT NULL,
+	  `path` varchar(100) NOT NULL,
+	  `name` varchar(100) NOT NULL,
+	  `arch` varchar(20) NOT NULL,
+	  `altarch` tinyint(3) unsigned NOT NULL,
+	  `enabled` enum('no','yes') NOT NULL DEFAULT 'yes',
+	  PRIMARY KEY (`repo_id`),
+	  UNIQUE KEY `uniqkey` (`major_release`,`path`,`altarch`)
+	);
+- master_timestamps (cache table for master timestamps):
+	CREATE TABLE `master_timestamps` (
+	  `repo_id` mediumint(8) unsigned NOT NULL,
+	  `version` varchar(20) NOT NULL,
+	  `value` varchar(100) NOT NULL,
+	  `checked` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`repo_id`,`version`)
+	);
+- valid_mirrors (cache table for mirror status):
+	CREATE TABLE `valid_mirrors` (
+	  `repo_id` mediumint(8) unsigned NOT NULL,
+	  `version` varchar(20) NOT NULL,
+	  `mirror_id` mediumint(8) unsigned NOT NULL,
+	  `ipver` enum('IPv4','IPv6') NOT NULL,
+	  `proto` enum('http','https','ftp','rsync') NOT NULL,	
+	  `checked` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`repo_id`,`version`,`mirror_id`,`ipver`,`proto`)
+	);
+
+Invocation:
+- Required parameters: exact CentOS release (like 6.10 or 7.5.1804),
+  and either "centos" or "altarch"
+- If using a geo_cc.pm module that is not in system path, use -I parameter
+  to perl to tell where to search for modules
+- Example: perl -I /home/avij/scripts /home/avij/scripts/makemirrorlists-combined.pl 7.5.1804 centos
+
+Maintenance:
+- Repos can be managed via the repos table
+- INSERT IGNORE INTO repos (major_release, path, name, arch, altarch, enabled) values 
+  (7, 'sclo/x86_64/rh/rh-perl526', 'sclo-rh-rh-perl526', 'x86_64', 0, 'yes');
+- Or use create_repolist.sh to produce the SQL automatically
+- In the latter case, do note that you do not need to remove existing repos
+  from the script's output; duplicate entries will be silently ignored by MySQL
+  so you can feed all 100+ lines into MySQL without issues
+- Repos can be enabled/disabled by setting the "enabled" attribute in repos
+  table to either yes or no, respectively
+- If someone is planning to create a new repo, its definition can be inserted
+  into the repos table at some early stage. If the crawler can't find the
+  repodata from master, the crawler will (quite) silently move on to the
+  next repo without making a fuss about the missing repo.
+- At point release times it would be a good idea to run the script manually
+  a few times prior to deploying it to cronjobs, in order to warm up the cache
+  with new data from the new release
+- Monitoring how many valid mirrors we have for a point release:
+  SELECT path, count(distinct mirror_id) FROM repos r, valid_mirrors v
+  WHERE r.repo_id=v.repo_id AND v.version='7.5.1804' AND ipver='IPv4'
+  AND altarch=0 AND enabled='yes' GROUP BY 1;
+
+Notes:
+- A full scan of all repos and all versions without any cached data is
+  going to take close to 3 hours, but typically altarch is <10min, C6 <25min,
+  C7 <25min with all the repos enabled
+- You can have crawling enabled for both 6.10 and 6.11 at the same time
+  without the script getting confused about this (cache entries are separate
+  for each release)
+- It is OK if two copies of the script for the same release are running at the
+  same time, although it is not optimal from the performance point of view
+- Only if the master data for some repository happens to change between those
+  two instances there can be some fighting about who has the correct data,
+  but the status will be eventually correct, and the script is smart enough
+  to detect when this has happened and clears the cache accordingly
+- If the "Can't connect to example.com:80 (getaddrinfo: Address family for
+  hostname not supported)" errors when trying to connect to an IPv4-only
+  mirror look too ugly, it is possible to do a DNS lookup first and only try
+  to connect if there's an IPv6 address (current separate IPv6 mirror checker
+  script does this).
+- The above DNS lookups would require perl-Net-DNS to be installed and a
+  few more lines of code
+- Connecting to HTTPS sites would require some more Perl modules
+
+mirrorlist.c.o considerations:
+- The old script wrote the lists to $root/$release/$repo/$arch/mirrorlists,
+  this one writes to $root/$ipver/$branch/$release/$repo/$arch/mirrorlists
+  where $ipver is ipv4 or ipv6, and $branch is centos or altarch
+- Due to the above, it is possible to run both old and new scripts in
+  parallel until the new script is deemed to be OK
+- It would be nice if mirrorlist.c.o supported a location override for the
+  states/provinces for debugging purposes, eg. &cc=us-TX or &cc=ca-QC
+- If there is no valid mirror in some state/province, a mirrorlist file will
+  not be created for that region, and any previously existing mirrorlist
+  file will be removed. It would be a good idea to run rsync with --delete
+  to remove any stale mirrorlist files.
+- If a matching mirrorlist is not found for that state/province, the main 
+  .us/.ca list should be used instead. It's possible that GeoIP returns
+  unknown state/province codes.
+- By default the script will delete mirrorlist files for any repository
+  which has been unavailable on master for 7 days. This should take
+  care of removing mirrorlist files for EOL content. But be warned that
+  this may also be dangerous -- if master is unavailable for a long time
+  for some reason (hardware failure for example), all mirrorlist files
+  will end up getting removed.
+- The "name" and "arch" columns in repos table are not actually used by
+  the mirror crawler, but they are there in the hope that they might be
+  useful for mirrorlist.c.o integration
+- If those columns do not get used, they could be dropped to make it easier
+  to manage repos (less data to worry about)
+- How should the repo be specified? My initial thought was to have them
+  named like &repo=sclo-rh-rh-perl526 for sclo/x86_64/rh/rh-perl526, but
+  that is going to need some sort of a mapping config file to map the repo
+  to the correct directory.
+
+
+makeisolists-combined.pl deployment notes
+=========================================
+- Similar to makemirrorlists-combined.pl
+- Invocation examples:
+  makeisolists-combined.pl 7.5.1804 centos x86_64
+  makeisolists-combined.pl 7.5.1804 altarch aarch64,armhfp,i386,power9,ppc64,ppc64le
+  makeisolists-combined.pl 6.10 centos i386,x86_64
+- The script will retrieve sha256sum.txt files from master and
+  check mirrors based on that information. Unlike makemirrorlists,
+  there is no need to change anything in database at point release
+  time. Only the version number that is given as a parameter to
+  the script needs to be changed.
+- Does not generate separate lists for IPv4/IPv6, but instead
+  writes everything to the ipv4 directory.
+- Uses the following database tables: isos, master_iso_fileinfo,
+  valid_iso_mirrors
