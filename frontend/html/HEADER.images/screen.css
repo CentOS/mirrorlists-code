@@ -1,0 +1,197 @@
+body {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    padding-right: 1%;
+    padding-left: 1%;
+}
+
+a:link { text-decoration: none; }
+a:visited { text-decoration: none; }
+a:link:hover, a:link:active { text-decoration: underline; color: green; }
+a:visited:hover { text-decoration: underline; color: green; }
+
+#header {
+    margin: 0px;
+    padding: 0px;
+    height: 100px;
+    background: #204C8D url(/HEADER.images/docs-header.png);
+    line-height: 1.0em;
+    border-top: solid 1px white;
+    border-bottom: solid 1px white;
+    border-left: solid 1px white;
+    border-right: solid 1px white;
+}
+
+#logo {
+    float: left;
+    margin: 10px 15px;
+    padding: 0;
+    /* For text only logo */
+    font-size: 1.4em;
+    line-height: 1em;
+    font-weight: bold;
+}
+
+*[dir="rtl"] #logo {
+    float: right;
+}
+
+#logo img {
+    vertical-align: middle;
+}
+
+#logo a {
+    color: black;
+    text-decoration: none;
+}
+
+#header .googlecontent {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#page {
+    background-color: white;
+    /*margin-top: -15px;*/
+    padding: 0px 20px 20px 20px;
+    border-left: solid 10px white;
+    border-right: solid 10px white;
+}
+
+#page ul { list-style: url(/HEADER.images/ul.png); } 
+
+#footer {
+    clear: both;
+    background: #204C8D url(/HEADER.images/docs-header.png);
+    border-bottom: solid 1px white;
+    border-left: solid 1px white;
+    border-right: solid 1px white;
+}
+
+html {
+	background: white;
+	background-color: white;
+	font-family: "DejaVu Sans", "Liberation Sans", sans-serif;
+	font-size: 0.85em;
+	line-height: 1.4em;
+}
+
+/* Headings */
+
+#page h1 {
+	font-size: 1.7em;
+	font-weight: bold;
+	line-height: 1.9em;
+	margin: 1.0em 0 1.0em 0;
+	padding: 0 0.7em; /* Should be the same for h{1-4} */
+	color: #fff;
+	background: #204C8D url(/HEADER.images/h1-background.png);
+	border: none;
+}
+
+#page h2 {
+	font-size: 1.4em;
+	line-height: 1.8em;
+	margin: 1em 0 1.2em 0;
+	padding: 0 0.7em; /* Should be the same for h{1-4} */
+	background: url('/HEADER.images/h2-background.png');
+	border: none;
+	color: #072b61;
+}
+
+/* h2 emulation */
+
+#page .table-of-contents-heading {
+	font-size: 1.3em;
+	font-weight: bold;
+	line-height: 1.8em;
+	margin: 0;
+	margin-bottom: 10px;
+	padding: 0em 0.3em; /* Should be the same for h{1-4} */
+	color: #072b61;
+	background: url('/HEADER.images/h2-background.png');
+}
+
+#page h3 {
+	font-size: 1.25em;
+	line-height: 1.6em;
+	margin: 1.5em 0 0.9em 0;
+	padding: 0 0.7em; /* Should be the same for h{1-4} */
+	color: #072b61;
+	border-bottom: 1px solid #dadada;
+}
+
+#page h4 {
+	font-size: 1.2em;
+	line-height: 1.4em;
+	margin: 1.4em 0 0.9em 0;
+	padding: 0 0.7em; /* Should be the same for h{1-4} */
+	color: #2963A6;
+	border-bottom: none;
+}
+
+#page h5 {
+	font-size: 1.1em;
+	line-height: 1.1em;
+	margin: 1.3em 0 0.9em 0;
+	padding: 0 1.5em;
+	color: #072b61;
+	font-weight: bold;
+	border-bottom: none;
+}
+
+#page h6 {
+	font-size: 1em;
+	line-height: 1.1em;
+	margin: 1.3em 0 0.9em 0;
+	padding: 0 1.5em;
+	color: #000;
+	font-weight: bold;
+	border-bottom: none;
+}
+
+#page pre {
+	padding: 0.5em 1em;
+	font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+	white-space: pre;
+	background-color: #FFFAE9;
+	border: 1px solid #e5e5e5;
+	border-left: 4px solid #ccc;
+}
+
+#page tt {
+	font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+	white-space: pre;
+}
+
+/* Push stuff inside of headings */
+
+#page p,
+#page pre,
+#page table,
+#page ul,
+#page ol {
+	margin-left: 1.5em;
+}
+
+/* Various */
+
+#page p {
+/*	margin-bottom: 1.3em;*/
+	margin-bottom: 0.5em;
+	line-height: 1.3em;
+	padding-left: 0;
+}
+
+#page ul li p,
+#page ol li p {
+	line-height: 1.3em;
+	padding: 0;
+	margin: 0 !important;
+}
+
+#page td > p { 
+	margin: 0.5em !important; 
+}
+
