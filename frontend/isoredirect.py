@@ -60,9 +60,9 @@ def home(branch, release, arch, filename):
     debug_region = ""
     if region is not None:
       debug_region=region
-    debugtext = "Debugging: Your IP address is %s, and we think your country is &lt;%s&gt; and your subregion is &lt;%s&gt;<br><br>" % (remote_ip, country, debug_region)
+    debugtext = "Debugging: Your IP address is %s, and we think your country is &lt;%s&gt; and your subregion is &lt;%s&gt;<br><br>\n" % (remote_ip, country, debug_region)
 
-  content = "%s<b>In order to conserve the limited bandwidth available, ISO images are not downloadable from mirror.centos.org<br><br>" % (debugtext)
+  content = "%s<b>In order to conserve the limited bandwidth available, ISO images are not downloadable from mirror.centos.org<br><br>\n" % (debugtext)
   footer = "<br><br>Mirrors verified %s UTC<br><br>\
 You can also download the ISO images using <a href='https://en.wikipedia.org/wiki/BitTorrent'>bittorrent</a>, a peer-to-peer file sharing protocol. The .torrent files can be found from CentOS mirrors. \
 Various bittorrent clients are available, including (in no particular order of preference): utorrent, vuze (Azureus), BitTorrent, Deluge, ctorrent, ktorrent, rtorrent and transmission. \
@@ -94,17 +94,18 @@ Packaged copies of various torrent clients for CentOS can be found in the reposi
     try:
       if os.path.isfile('views/%s' % (mirrorlist_file)):
         if i == 0 and c != "fallback":
-          content += 'The following mirrors in your region should have the ISO images available:</b><br><br>'
+          content += 'The following mirrors in your region should have the ISO images available:</b><br><br>\n'
           header_printed = True
           mirrors_from_primary_region = True
         if not header_printed:
-          content += 'The following mirrors should have the ISO images available:</b><br><br>'
+          content += 'The following mirrors should have the ISO images available:</b><br><br>\n'
           header_printed = True
         with open('views/%s' % (mirrorlist_file)) as fh:
           for line in fh:
+            line = line.strip()
             if not seen.has_key(line):
               seen[line] = True
-              content += "<a href='%s'>%s</a><br>" % (line, line)
+              content += "<a href='%s'>%s</a><br>\n" % (line, line)
               number_of_urls += 1
               if number_of_urls == 30:
                 return template("isoredirect.tpl", content=content + "+ others, see the full list of mirrors: <a href='%s'>%s</a>%s" % (mirrorlistpage, mirrorlistpage, footer))
@@ -117,7 +118,7 @@ Packaged copies of various torrent clients for CentOS can be found in the reposi
       return template("isoredirect.tpl", content=content + "+ others, see the full list of mirrors: <a href='%s'>%s</a>%s" % (mirrorlistpage, mirrorlistpage, footer))
 
     if i == 0 and mirrors_from_primary_region:
-      content += "<br>Other mirrors further away:<br><br>"
+      content += "<br>Other mirrors further away:<br><br>\n"
 
   return template("isoredirect.tpl", content=content + footer)
 
