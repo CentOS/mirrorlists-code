@@ -8,7 +8,11 @@ It contains the following kind of scripts:
    * http://isoredirect.centos.org
 
 ## Backend (crawler)
-Place holder for doc
+There are two Perl scripts for checking mirrors: makemirrorlists-combined.pl for creating files for mirrorlist.centos.org,
+and makeisolists-combined.pl for creating files for isoredirect.centos.org. Both scripts can create lists for CentOS 6 and CentOS 7,
+including SIG and AltArch content. makemirrorlists-combined.pl will test each mirror separately for IPv4 and IPv6.
+mirrorlist.centos.org will then be able to present only IPv6-capable mirrors to the clients when mirrorlist.centos.org is accessed over IPv6.
+More details about the internals of these scripts can be found in backend/mirrorlist_crawler_deployment_notes.txt
 
 ## Frontend 
 All scripts are located in the frontend folder.
