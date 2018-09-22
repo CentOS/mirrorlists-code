@@ -395,7 +395,7 @@ sub get_fileinfo {
 
 	my $ua = LWP::UserAgent->new;
 	$ua->timeout(10);
-	$ua->agent('CentOS makeisolist/9q ');
+	$ua->agent('CentOS-makeisolists/9q ');
 	$ua->max_redirect(0);
 	my $res = '';
 	my $length = 0;

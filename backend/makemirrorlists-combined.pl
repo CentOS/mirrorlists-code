@@ -617,6 +617,7 @@ sub get_file
 	$url =~ s!/atomic/(.+?)/repo/repodata/repomd.xml$!/atomic/$1/repo/summary!;
 
 	my $ua = LWP::UserAgent->new;
+	$ua->agent('CentOS-makemirrorlists/9q ');
 	
 	# don't follow redirects
 	$ua->max_redirect(0);
