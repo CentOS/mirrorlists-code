@@ -69,7 +69,7 @@ def home():
   
   response.content_type= 'text/plain'
   bottle.TEMPLATES.clear() 
-  return template(tn, rel=release, repo=repo, arch=arch)
+  return template(tn)
 
 @route('/<pth:re:.*>')
 def nothere(pth):
