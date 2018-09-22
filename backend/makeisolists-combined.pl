@@ -88,11 +88,12 @@ $db->do("DELETE FROM master_iso_fileinfo WHERE checked < date_sub(now(), interva
 
 my $masterhttp = "http://master-admin.centos.org/";
 
+my %checkedonce = ( );  # mirror IDs (incl. protocol) that were checked at least once in this session
+my %http_errors = ( );	# keep track of how many HTTP errors (30x, 403, 404) we got from this mirror (mirror_id + protocol)
+
 foreach my $arch (shuffle @arches) {
 	my %iso_info = ();	# hash of master file info by iso_id
 	my %iso_filenames = ();	# hash of filenames by iso_id
-	my %checkedonce = ( );  # mirror IDs (incl. protocol) that were checked at least once in this session
-	my %http_errors = ( );	# keep track of how many HTTP errors (30x, 403, 404) we got from this mirror (mirror_id + protocol)
 	my $res;
 	my $ref;
 
@@ -394,7 +395,7 @@ sub get_fileinfo {
 
 	my $ua = LWP::UserAgent->new;
 	$ua->timeout(10);
-	$ua->agent('CentOS makeisolist/9q ');
+	$ua->agent('CentOS-makeisolists/9q ');
 	$ua->max_redirect(0);
 	my $res = '';
 	my $length = 0;
