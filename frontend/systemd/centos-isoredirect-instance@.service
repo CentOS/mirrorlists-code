@@ -1,0 +1,15 @@
+[Unit]
+Description=CentOS Isoredirect - instance %i
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+Alias=centos-isolist.target
+
+
+[Service]
+Type=simple
+User=centos
+WorkingDirectory=/var/lib/centos-mirrorlist/
+ExecStart=/usr/bin/python /usr/lib/python2.7/site-packages/bottle.py -b :810%i -s paste isoredirect
+

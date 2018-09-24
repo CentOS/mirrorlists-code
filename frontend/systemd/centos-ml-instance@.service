@@ -2,6 +2,10 @@
 Description=CentOS Mirrorlists - instance %i
 After=network.target
 
+[Install]
+WantedBy=multi-user.target
+Alias=centos-mirrorlist.target
+
 [Service]
 Type=simple
 User=centos
