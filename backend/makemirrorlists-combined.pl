@@ -645,7 +645,7 @@ sub create_json {
 	my %repohash = ( );
 	my $foundrepos = 0;
 	# order by altarch desc so that if there are conflicting repo definitions, main arch repos get priority (altarch data gets overwritten)
-	my $repores = $db->prepare("SELECT * FROM repos WHERE enabled='yes' ORDER BY altarch DESC");
+	my $repores = $db->prepare("SELECT * FROM repos WHERE enabled='yes' ORDER BY altarch DESC, repo_id");
 	$repores->execute();
 	while(my $reporef = $repores->fetchrow_hashref()) {
 		my %repo = %$reporef;
