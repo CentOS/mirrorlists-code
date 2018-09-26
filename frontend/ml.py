@@ -27,11 +27,11 @@ def home():
   ipver = 'ipv'+str(ip_ver)
 
   if not arch:
-    return 'arch not specified'
+    return 'arch not specified\n'
   if not repo:
-    return 'repo not specified'
+    return 'repo not specified\n'
   if not release:
-    return 'release not specified'
+    return 'release not specified\n'
 
   if len(cc) > 0:
     country = cc
@@ -50,12 +50,9 @@ def home():
       country = 'fallback'
   try:
     mirrorlist_file = '%s/%s/%s/%s/mirrorlists/mirrorlist.%s' % (ipver,paths[release][repo][arch]["branch"],release,paths[release][repo][arch]["path"],country)
-  except:
-    return 'Invalid release/repo/arch combination or unknown country %s' % (country)
-  try:
     mirrorlist_fallback = '%s/%s/%s/%s/mirrorlists/mirrorlist.fallback' % (ipver,paths[release][repo][arch]["branch"],release,paths[release][repo][arch]["path"])
   except:
-    return 'Invalid release/repo/arch combination and no fallback'
+    return 'Invalid release/repo/arch combination\n'
 
   if os.path.isfile('views/%s' % (mirrorlist_file)):
     tn=mirrorlist_file
@@ -64,7 +61,7 @@ def home():
   elif os.path.isfile('views/%s' % (mirrorlist_fallback)):
     tn=mirrorlist_fallback
   else:
-    return 'Invalid release/repo/arch combination or no mirrorlist.fallback'
+    return 'Invalid release/repo/arch combination or no mirrorlist.fallback\n'
      
   
   response.content_type= 'text/plain'
