@@ -645,7 +645,7 @@ sub create_json {
 	my %repohash = ( );
 	my $foundrepos = 0;
 	# order by altarch desc so that if there are conflicting repo definitions, main arch repos get priority (altarch data gets overwritten)
-	my $repores = $db->prepare("SELECT * FROM repos WHERE enabled='yes' ORDER BY altarch DESC");
+	my $repores = $db->prepare("SELECT * FROM repos WHERE enabled='yes' ORDER BY altarch DESC, repo_id");
 	$repores->execute();
 	while(my $reporef = $repores->fetchrow_hashref()) {
 		my %repo = %$reporef;
@@ -697,10 +697,26 @@ sub create_json {
 	}
 	$json .= "\n}\n";
 
-	my $jsonfilename = "$outputdir/repos.json";
-	open (JSON, ">$jsonfilename") || warn ("cannot open $jsonfilename");
-	print JSON $json;
-	close(JSON);
+	my $newmd5 = md5_hex($json);
+
+	my $oldmd5 = "";
+
+	if( -r "$outputdir/repos.json" ) {
+		open(OLD, "$outputdir/repos.json") || warn("Can't open old repos.json");
+		my $oldjson = do { local $/; <OLD> };
+		close(OLD);
+		$oldmd5 = md5_hex($oldjson);
+	}
+
+	if( $newmd5 ne $oldmd5 ) {
+		logprint(1, "New repos.json $newmd5, old was $oldmd5\n");
+		my $jsonfilename = "$outputdir/repos.json";
+		open (JSON, ">$jsonfilename") || warn ("cannot open $jsonfilename");
+		print JSON $json;
+		close(JSON);
+	} else {
+		logprint(2, "repos.json unchanged\n");
+	}
 
 #	not used at the moment
 #	my $pyfilename = "$outputdir/repos.py";
