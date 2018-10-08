@@ -69,6 +69,15 @@ Various bittorrent clients are available, including (in no particular order of p
 Packaged copies of various torrent clients for CentOS can be found in the repositories listed in the following wiki article: \
 <a href='https://wiki.centos.org/AdditionalResources/Repositories'>https://wiki.centos.org/AdditionalResources/Repositories</a>" % (lastchecked)
 
+  # if using curl/wget and requesting a file, redirect immediately to the first mirror
+  fast_redirect = False
+  try:
+    agent = request.environ.get('HTTP_USER_AGENT')[:5].lower()
+    if (agent == "curl/" or agent == "wget/") and filename != "":
+      fast_redirect = True
+  except:
+    pass
+
   # build a list of regions to check
   try:
     if region is not None:
@@ -103,6 +112,10 @@ Packaged copies of various torrent clients for CentOS can be found in the reposi
         with open('views/%s' % (mirrorlist_file)) as fh:
           for line in fh:
             line = line.strip()
+            if fast_redirect:
+              response.status = 302
+              response.set_header("Location", line)
+              return
             if not seen.has_key(line):
               seen[line] = True
               content += "<a href='%s'>%s</a><br>\n" % (line, line)
