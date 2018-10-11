@@ -7,12 +7,25 @@ import ipaddr
 import json
 import time
 
-# Json file holding the nearby countries list, generated from geo_cc.pm with convert_ccgroups_to_json.pl
-ccgroups_file = 'ccgroups.json'
 geodb = geoip2.database.Reader('/usr/share/GeoIP/GeoLite2-City.mmdb')
 
-with open(ccgroups_file) as ccgroupjson:
+# Json file holding the nearby countries list, generated from geo_cc.pm with convert_ccgroups_to_json.pl
+with open('ccgroups.json') as ccgroupjson:
   ccgroups = json.load(ccgroupjson)
+
+# Json file holding automatically generated additional nearby countries, generated with create_additional_countries.py
+try:
+  with open('additional_countries.json') as additionalcountriesjson:
+    additional_countries = json.load(additionalcountriesjson)
+  for addcc in additional_countries:
+    # append the additional countries to ccgroups
+    if ccgroups.has_key(addcc):
+      ccgroups[addcc] = ccgroups[addcc] + additional_countries[addcc]
+    else:
+      ccgroups[addcc] = [addcc] + additional_countries[addcc]
+except:
+  # this is only a "nice to have" list
+  pass
 
 @route('/<branch:re:(centos|altarch)>/<release:re:[6789](\.[0-9.]+)?>/isos/<arch:re:(x86_64|aarch64|armhfp|i386|power9|ppc64(le)?)/?><filename:re:[-A-Za-z0-9._]*>')
 def home(branch, release, arch, filename):
