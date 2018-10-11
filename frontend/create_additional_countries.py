@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import json
 from math import radians, sin, cos, acos
-import string
 
 #
 # this script creates a list of countries that are <= 5000 km away from each country
