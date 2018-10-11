@@ -2,6 +2,7 @@
 import bottle
 from bottle import route, run, request, abort, template, response
 from bottle import PasteServer
+from time import sleep
 import os
 import geoip2.database
 import ipaddr
@@ -21,6 +22,7 @@ def home():
   repo=request.query.repo
   ip=request.remote_route[-1]
   cc=request.query.cc
+  response.content_type = 'text/plain'
 
   remote_ip = ipaddr.IPAddress(ip)
   ip_ver = remote_ip.version
@@ -54,19 +56,29 @@ def home():
   except:
     return 'Invalid release/repo/arch combination\n'
 
-  if os.path.isfile('views/%s' % (mirrorlist_file)):
-    tn=mirrorlist_file
-  elif (country[:3] == 'us-' or country[:3] == 'ca-') and os.path.isfile('views/%s' % (mirrorlist_file[:-3])):
-    tn=mirrorlist_file[:-3]
-  elif os.path.isfile('views/%s' % (mirrorlist_fallback)):
-    tn=mirrorlist_fallback
-  else:
-    return 'Invalid release/repo/arch combination or no mirrorlist.fallback\n'
-     
-  
-  response.content_type= 'text/plain'
   bottle.TEMPLATES.clear() 
-  return template(tn)
+
+  # build a list of possible mirrorlists to return, in order of preference
+  lists = []
+  if os.path.isfile('views/%s' % (mirrorlist_file)):
+    lists.append(mirrorlist_file)
+  if (country[:3] == 'us-' or country[:3] == 'ca-') and os.path.isfile('views/%s' % (mirrorlist_file[:-3])):
+    lists.append(mirrorlist_file[:-3])
+  if os.path.isfile('views/%s' % (mirrorlist_fallback)):
+    lists.append(mirrorlist_fallback)
+
+  for tn in lists:
+    for retries in range(1,2):
+      try:
+        return template(tn)
+      except:
+        sleep(0.1)
+
+  # if we got this far:
+  # - the repo exists (if not, it would have been caught earlier), and despite this,
+  # - mirrorlists were unavailable, so
+  # -> return something useful and hope for the best
+  return 'http://mirror.centos.org/%s/%s/%s/\n' % (paths[release][repo][arch]["branch"], release, paths[release][repo][arch]["path"])
 
 @route('/<pth:re:.*>')
 def nothere(pth):
