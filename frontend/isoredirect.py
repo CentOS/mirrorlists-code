@@ -161,12 +161,17 @@ def nothere(pth):
     # make sure invalid URLs won't be indexed by web crawlers
     response.status=404
   return template("isoredirect.tpl", content="\
-To use the CentOS ISO Redirect Service, please include the directory in the URL. Some examples:<br><ul>\
-<li><b><a href='/centos/7/isos/x86_64/'>http://isoredirect.centos.org/centos/7/isos/x86_64/</a></b> for CentOS 7 x86_64 iso images<br>\
-<li><b><a href='/altarch/7/isos/ppc64le/'>http://isoredirect.centos.org/altarch/7/isos/ppc64le/</a></b> for CentOS 7 AltArch ppc64le iso images<br>\
-<li><b><a href='/altarch/7/isos/armhfp/'>http://isoredirect.centos.org/altarch/7/isos/armhfp/</a></b> for CentOS 7 AltArch armhfp disk images<br>\
-<li><b><a href='/centos/6/isos/x86_64/'>http://isoredirect.centos.org/centos/6/isos/x86_64/</a></b> for CentOS 6 x86_64 iso images<br>\
-<li><b><a href='/centos/6/isos/i386/'>http://isoredirect.centos.org/centos/6/isos/i386/</a></b> for CentOS 6 i386 iso images<br>\
-</ul>")
+To use the CentOS ISO Redirect Service, please include the directory in the URL. Some examples:<br><br>\n\
+<table border=0>\n\
+<tr><td><b><a href='/centos/7/isos/x86_64/'>http://isoredirect.centos.org/centos/7/isos/x86_64/</a></b></td><td>for CentOS 7 x86_64 iso images</td></tr>\n\
+<tr><td><b><a href='/altarch/7/isos/aarch64/'>http://isoredirect.centos.org/altarch/7/isos/aarch64/</a></b></td><td>for CentOS 7 AltArch AArch64 iso images</td></tr>\n\
+<tr><td><b><a href='/altarch/7/isos/armhfp/'>http://isoredirect.centos.org/altarch/7/isos/armhfp/</a></b></td><td>for CentOS 7 AltArch armhfp disk images</td></tr>\n\
+<tr><td><b><a href='/altarch/7/isos/i386/'>http://isoredirect.centos.org/altarch/7/isos/i386/</a></b></td><td>for CentOS 7 AltArch i386 iso images</td></tr>\n\
+<tr><td><b><a href='/altarch/7/isos/power9/'>http://isoredirect.centos.org/altarch/7/isos/power9/</a></b></td><td>for CentOS 7 AltArch POWER9 iso images</td></tr>\n\
+<tr><td><b><a href='/altarch/7/isos/ppc64/'>http://isoredirect.centos.org/altarch/7/isos/ppc64/</a></b></td><td>for CentOS 7 AltArch ppc64 iso images</td></tr>\n\
+<tr><td><b><a href='/altarch/7/isos/ppc64le/'>http://isoredirect.centos.org/altarch/7/isos/ppc64le/</a></b></td><td>for CentOS 7 AltArch ppc64le iso images</td></tr>\n\
+<tr><td><b><a href='/centos/6/isos/x86_64/'>http://isoredirect.centos.org/centos/6/isos/x86_64/</a></b></td><td>for CentOS 6 x86_64 iso images</td></tr>\n\
+<tr><td><b><a href='/centos/6/isos/i386/'>http://isoredirect.centos.org/centos/6/isos/i386/</a></b></td><td>for CentOS 6 i386 iso images</td></tr>\n\
+</table>")
   
 run(server=PasteServer, port=8000, debug=False, reloader=True)
