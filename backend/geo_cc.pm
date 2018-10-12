@@ -119,6 +119,7 @@ my %ccgroups = (
 	ph => 'hk-vn-my-sg-id-au',
 	pk => 'in-bd-af-tj-uz-kg-th-om-iq-sa',
 	pl => 'cz-sk-de-ua-se-lt-nl-lv-ee-fi',
+	pm => 'ca-us-gl-is',
 	pr => 'do-ht-ve-gf-us',
 	pt => 'es-fr-de-gb',
 	py => 'ar-br-bo-uy-cl-pe-ec-co-ve-gf-us',
