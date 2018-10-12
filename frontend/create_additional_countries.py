@@ -331,17 +331,27 @@ unlikely_mirror_countries = {
 remote_countries = {
   # these countries are far away from other countries, need more than a 5000 km range
   "aq", # Antarctica
+  "ar", # Argentina
   "as", # American Samoa
   "au", # Australia
   "ck", # Cook Islands
   "fj", # Fiji
+  "fk", # Falkland Islands
+  "gs", # South Georgia and the South Sandwich Islands
+  "hm", # Heard Island and McDonald Islands
   "ki", # Kiribati
   "mh", # Marshall Islands
+  "nc", # New Caledonia
+  "nf", # Norfolk Island
+  "nr", # Nauru
   "nu", # Niue
   "nz", # New Zealand
   "pf", # French Polynesia
   "pn", # Pitcairn Islands
+  "sb", # Solomon Islands
+  "tf", # French Southern Territories
   "tk", # Tokelau
+  "to", # Tonga
   "tv", # Tuvalu
   "vu", # Vanuatu
   "wf", # Wallis and Futuna
