@@ -137,7 +137,7 @@ foreach my $arch (shuffle @arches) {
 
 			# see if the value has changed since the last time
 			$res = $db->prepare("SELECT value FROM master_iso_fileinfo
-				WHERE iso_id=$iso_id;");
+				WHERE iso_id=$iso_id AND version='$release';");
 			$res->execute();
 			my $ref = $res->fetchrow_hashref();
 			my $oldvalue = $$ref{"value"};
@@ -146,7 +146,7 @@ foreach my $arch (shuffle @arches) {
 			if($finfo ne $oldvalue) {
 				logprint (2, "$iso new value $finfo, old value $oldvalue\n");
 				# information changed, invalidate old cached mirror data
-				$db->do("DELETE from valid_iso_mirrors WHERE iso_id=$iso_id;");
+				$db->do("DELETE from valid_iso_mirrors WHERE iso_id=$iso_id AND version='$release';");
 			}
 			$db->do("REPLACE INTO master_iso_fileinfo (iso_id, version, value, checked)
 				VALUES ($iso_id, '$release', '$finfo', now());");
