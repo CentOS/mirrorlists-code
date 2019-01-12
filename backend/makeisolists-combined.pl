@@ -172,9 +172,13 @@ foreach my $arch (shuffle @arches) {
 	next if scalar(keys %iso_info) == 0;
 
 	# fetch the list of previously valid mirrors
+	# iso_id=0 is for caching the directory index status
 	my %valid_mirrors = ( );	# mirror IDs (incl. protocol and iso_id) that were previously found to be valid
 	$res = $db->prepare("SELECT v.mirror_id, v.proto, i.iso_id FROM valid_iso_mirrors v, isos i
-		WHERE v.iso_id=i.iso_id AND v.version='$release' AND i.arch='$arch' and i.altarch=$altarch;");
+		WHERE v.iso_id=i.iso_id AND v.version='$release' AND i.arch='$arch' AND i.altarch=$altarch AND v.iso_id>0
+		UNION
+		SELECT v.mirror_id, v.proto, 0 FROM valid_iso_mirrors v
+		WHERE v.version='$release' AND v.iso_id=0");
 	$res->execute();
 
 	while(my @l = $res->fetchrow_array()) {
@@ -322,9 +326,38 @@ foreach my $arch (shuffle @arches) {
 			}
 
 			if(!$onebad) {
-				logprint (2, "adding $url\n");
-				$okmirrors .= "$url\n";
-				last if ++$okmirrorcount>=$max_num_of_mirrors;
+				# mirror has all .isos, check that dirindex is enabled
+				# but only if the result hasn't already been stored into cache
+				if(!defined($valid_mirrors{"$mirror_id $proto 0"})) {
+					my $ua = LWP::UserAgent->new;
+					$ua->timeout(20);
+					$ua->agent('CentOS-makeisolists/9q ');
+					$ua->max_redirect(0);
+					my $req = HTTP::Request->new(GET => "$url");
+
+					$req->header('Accept' => 'text/html');
+
+					# send request
+					my $lwpres = $ua->request($req);
+
+					if ($lwpres->is_success) {
+						# this used to search for CentOS- but then I found out that one mirror uses JS for creating the list
+						if ($lwpres->content =~ /href/i) {
+							$valid_mirrors{"$mirror_id $proto 0"} = 1;
+							$db->do("REPLACE INTO valid_iso_mirrors (iso_id, version, mirror_id, proto, checked)
+								VALUES (0, '$release', $mirror_id, '$proto', now());");
+						} else {
+							print "$url did not have a directory listing\n";
+						}
+					} else {
+						print "$url error - " . $lwpres->status_line . "\n";
+					}
+				}
+				if(defined($valid_mirrors{"$mirror_id $proto 0"})) {
+					logprint (2, "adding $url\n");
+					$okmirrors .= "$url\n";
+					last if ++$okmirrorcount>=$max_num_of_mirrors;
+				}
 			}
 		}		
 
