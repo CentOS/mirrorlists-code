@@ -347,10 +347,10 @@ foreach my $arch (shuffle @arches) {
 							$db->do("REPLACE INTO valid_iso_mirrors (iso_id, version, mirror_id, proto, checked)
 								VALUES (0, '$release', $mirror_id, '$proto', now());");
 						} else {
-							print "$url did not have a directory listing\n";
+							logprint (1, "$url did not have a directory listing\n");
 						}
 					} else {
-						print "$url error - " . $lwpres->status_line . "\n";
+						logprint (1, "$url error - " . $lwpres->status_line . "\n");
 					}
 				}
 				if(defined($valid_mirrors{"$mirror_id $proto 0"})) {
