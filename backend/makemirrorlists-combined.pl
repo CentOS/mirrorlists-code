@@ -238,9 +238,9 @@ foreach my $ipver ("ipv4", "ipv6") {
 			my $commonqueryparams = "status NOT IN ('Dead', 'Disabled', 'Gone') AND state NOT IN ('timeout') AND use_in_mirrorlists='yes'";
 			my $columns = "mirror_id, ";
 			if($altarch) {
-				$columns .= "altarch_http, altarch_ftp";
+				$columns .= "altarch_http";
 			} else {
-				$columns .= "http, ftp";
+				$columns .= "http";
 			}
 
 			PHASE: foreach my $phase (1..8) {
@@ -332,8 +332,8 @@ foreach my $ipver ("ipv4", "ipv6") {
 				if($phase == 7) {
 					logprint(2, "only got $goodtot - adding some centos ones\n");
 					next unless $continent;
-					$query = "SELECT mirror_id, arch_all, arches, concat(http,'centos/') AS http, ftp, status, state,
-						concat(http,'altarch/') AS altarch_http, altarch_ftp
+					$query = "SELECT mirror_id, arch_all, arches, concat(http,'centos/') AS http, status, state,
+						concat(http,'altarch/') AS altarch_http
 						FROM mirrors
 						WHERE Type = 'Slave' AND status = 'Master' AND continent = '$continent' 
 						AND $commonqueryparams ORDER BY RAND()";
@@ -341,8 +341,8 @@ foreach my $ipver ("ipv4", "ipv6") {
 
 				if($phase == 8) {
 					logprint(2, "only got $goodtot - adding some centos ones\n") if $continent eq "fallback";
-					$query = "SELECT mirror_id, arch_all, arches, concat(http,'centos/') AS http, ftp, status, state,
-						concat(http,'altarch/') AS altarch_http, altarch_ftp
+					$query = "SELECT mirror_id, arch_all, arches, concat(http,'centos/') AS http, status, state,
+						concat(http,'altarch/') AS altarch_http
 						FROM mirrors 
 						WHERE Type = 'Slave' AND status = 'Master' AND continent <> '$continent' 
 						AND $commonqueryparams ORDER BY RAND()";
@@ -370,21 +370,11 @@ foreach my $ipver ("ipv4", "ipv6") {
 							$url = "${base}$release/$repo_path/";
 							$proto = "http";
 						}
-						elsif ($mirror{"altarch_ftp"}) {
-							$base = $mirror{"altarch_ftp"};
-							$url = "${base}$release/$repo_path/";
-							$proto = "ftp";
-						}
 					} else {
 						if ($mirror{"http"}) {
 							$base = $mirror{"http"};
 							$url = "${base}$release/$repo_path/";
 							$proto = "http";
-						}
-						elsif ($mirror{"ftp"}) {
-							$base = $mirror{"ftp"};
-							$url = "${base}$release/$repo_path/";
-							$proto = "ftp";
 						}
 					}
 
