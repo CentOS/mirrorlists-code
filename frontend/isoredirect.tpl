@@ -3,6 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title>CentOS Mirror</title>
+    <link rel="shortcut icon" href="/HEADER.images/favicon.ico">
     <link rel="stylesheet" type="text/css" media="screen" href="/HEADER.images/screen.css">
   </head>
   <body>
