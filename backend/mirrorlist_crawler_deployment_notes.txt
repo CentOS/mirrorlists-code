@@ -35,19 +35,48 @@ Prerequisites:
 - MySQL(/MariaDB) database
 
 Database tables:
-- mirrors, unmodified except for some additional indexes. Here's the
-  full list at the moment:
-  PRIMARY KEY (`mirror_id`),
-  UNIQUE KEY `name` (`name`),
-  KEY `cc_idx` (`cc`),
-  KEY `continent_idx` (`continent`),
-  KEY `centos_code_idx` (`centos_code`),
-  KEY `altarch_idx` (`altarch`),
-  KEY `type_idx` (`Type`),
-  KEY `status_idx` (`status`),
-  KEY `http_idx` (`http`(25)),
-  KEY `locminor_idx` (`location-minor`)
-  KEY `https_idx` (`https`)
+- mirrors: (*)
+	CREATE TABLE `mirrors` (
+	  `mirror_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+	  `name` varchar(100) NOT NULL DEFAULT '',
+	  `location-major` varchar(20) NOT NULL DEFAULT '',
+	  `location-minor` varchar(20) NOT NULL DEFAULT '',
+	  `http` varchar(127) NOT NULL DEFAULT '',
+	  `https` varchar(127) NOT NULL DEFAULT '',
+	  `rsync` varchar(127) NOT NULL DEFAULT '',
+	  `speed` enum('T1','T2','T3') NOT NULL DEFAULT 'T1',
+	  `bandwidth` varchar(10) NOT NULL DEFAULT '',
+	  `status` enum('Active','Disabled','Dead','Master','Gone') NOT NULL DEFAULT 'Active',
+	  `state` enum('current','behind','out of date','not syncing','timeout','broken') NOT NULL DEFAULT 'current',
+	  `Type` enum('Direct','Indirect','Personal','Internal','Master','Slave') NOT NULL DEFAULT 'Direct',
+	  `url` varchar(128) NOT NULL DEFAULT '',
+	  `arch_all` enum('yes','no') NOT NULL DEFAULT 'yes',
+	  `arches` varchar(64) NOT NULL DEFAULT '',
+	  `cc` char(2) NOT NULL DEFAULT '',
+	  `continent` enum('us','eu','af','oc','ap','sa') NOT NULL DEFAULT 'us',
+	  `centos_code` char(2) NOT NULL DEFAULT '',
+	  `use_in_mirrorlists` enum('yes','no') NOT NULL DEFAULT 'yes',
+	  `altarch` enum('no','yes') NOT NULL DEFAULT 'no',
+	  `altarch_http` varchar(127) NOT NULL DEFAULT '',
+	  `altarch_https` varchar(127) NOT NULL DEFAULT '',
+	  `altarch_rsync` varchar(127) NOT NULL DEFAULT '',
+	  PRIMARY KEY (`mirror_id`),
+	  UNIQUE KEY `name` (`name`),
+	  KEY `cc_idx` (`cc`),
+	  KEY `continent_idx` (`continent`),
+	  KEY `centos_code_idx` (`centos_code`),
+	  KEY `altarch_idx` (`altarch`),
+	  KEY `type_idx` (`Type`),
+	  KEY `status_idx` (`status`),
+	  KEY `http_idx` (`http`(25)),
+	  KEY `locminor_idx` (`location-minor`),
+	  KEY `cc_status_idx` (`cc`,`status`),
+	  KEY `altarch_status_idx` (`altarch`,`status`),
+	  KEY `cc_locminor_idx` (`cc`,`location-minor`),
+	  KEY `https_idx` (`https`(26))
+	);
+  (*) the mirrors table has a lot of old currently unused columns as well,
+      not listed here.
 - repos:
 	CREATE TABLE `repos` (
 	  `repo_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
