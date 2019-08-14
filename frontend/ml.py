@@ -19,7 +19,7 @@ with open(repo_file) as repos:
 def home():
   release=request.query.release
   arch=request.query.arch
-  repo=request.query.repo
+  repo=request.query.repo.lower()
   ip=request.remote_route[-1]
   cc=request.query.cc
   response.content_type = 'text/plain'
