@@ -101,15 +101,15 @@ foreach my $arch (shuffle @arches) {
 			
 	# read the master sha256sum file
 	my $filetype = "isos";
-	my $isourl = "$release/$filetype/$arch/";
-	my $isosha256url = "${isourl}sha256sum.txt";
+	my $checksumfilename = "sha256sum.txt";
 	if($release !~ /^[67]/) {
 		if($arch eq "armhfp") {
 			$filetype = "images";
-			$isourl = "$release/$filetype/$arch/";
 		}
-		$isosha256url = "${isourl}CHECKSUM";
+		$checksumfilename = "CHECKSUM";
 	}
+	my $isourl = "$release/$filetype/$arch/";
+	my $isosha256url = "${isourl}${checksumfilename}";
 		
 	my $sha256list = get_isolist("${masterhttp}${centos_or_altarch}/$isosha256url");
 
