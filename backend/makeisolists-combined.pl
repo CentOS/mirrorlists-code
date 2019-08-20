@@ -100,8 +100,17 @@ foreach my $arch (shuffle @arches) {
 	############## get master iso lists ##########
 			
 	# read the master sha256sum file
-	my $isourl = "$release/isos/$arch/";
-	my $isosha256url = "${isourl}sha256sum.txt";
+	my $filetype = "isos";
+	my $checksumfilename = "sha256sum.txt";
+	if($release !~ /^[67]/) {
+		if($arch eq "armhfp") {
+			$filetype = "images";
+		}
+		$checksumfilename = "CHECKSUM";
+	}
+	my $isourl = "$release/$filetype/$arch/";
+	my $isosha256url = "${isourl}${checksumfilename}";
+		
 	my $sha256list = get_isolist("${masterhttp}${centos_or_altarch}/$isosha256url");
 
 	if($debug == 0){
@@ -194,7 +203,7 @@ foreach my $arch (shuffle @arches) {
 		push(@allccs, $$ref{"cc"});
 	}
 
-	system("mkdir $outputdir/ipv4/${centos_or_altarch}/$release/isos/$arch -p");
+	system("mkdir $outputdir/ipv4/${centos_or_altarch}/$release/$filetype/$arch -p");
 
 	foreach my $cc (shuffle ("%", @allccs, @centos_codes, keys %country_subregions)) {
 		logprint (2, "cc: $cc\n");
@@ -366,10 +375,10 @@ foreach my $arch (shuffle @arches) {
 			logprint (2, "ISO - $iso\n$okisos{$iso}\n");
 		}
 
-		unlink glob("$outputdir/ipv4/${centos_or_altarch}/$release/isos/$arch/*.$save_cc");
+		unlink glob("$outputdir/ipv4/${centos_or_altarch}/$release/$filetype/$arch/*.$save_cc");
 
 		foreach my $iso (keys(%okisos)) {
-			my $outfile = "$outputdir/ipv4/${centos_or_altarch}/$release/isos/$arch/$iso.$save_cc";
+			my $outfile = "$outputdir/ipv4/${centos_or_altarch}/$release/$filetype/$arch/$iso.$save_cc";
 
 			if (open (OUT, ">$outfile")) {
 				print OUT "$okisos{$iso}";
@@ -380,7 +389,7 @@ foreach my $arch (shuffle @arches) {
 			}
 		}
 				
-		my $isofile = "$outputdir/ipv4/${centos_or_altarch}/$release/isos/$arch/iso.$save_cc";
+		my $isofile = "$outputdir/ipv4/${centos_or_altarch}/$release/$filetype/$arch/iso.$save_cc";
 				
 		if($okmirrors) {
 			if (open (OUT, ">$isofile")) {
@@ -414,7 +423,18 @@ sub get_isolist {
 
 	if ($lwpres->is_success) {
 		my $isolist = $lwpres->content;
-		return $isolist;
+		if($url =~ /sha256sum.txt$/) {
+			return $isolist;
+		} else {
+			# convert CHECKSUM file format to regular sha256sum file format
+			my $retval = "";
+			foreach my $row (split '\n', $isolist) {
+				if ($row =~ /^SHA256 \((.+?)\) = ([0-9a-f]+)/) {
+					$retval .= "$2  $1\n";
+				}
+			}
+			return $retval;
+		}
 	} else {
 		logprint(0,"Empty isolist $url\n");
 		return 0;

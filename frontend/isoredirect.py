@@ -27,8 +27,8 @@ except:
   # this is only a "nice to have" list
   pass
 
-@route('/<branch:re:(centos|altarch)>/<release:re:[6789](\.[0-9.]+)?>/isos/<arch:re:(x86_64|aarch64|armhfp|i386|power9|ppc64(le)?)/?><filename:re:[-A-Za-z0-9._]*>')
-def home(branch, release, arch, filename):
+@route('/<branch:re:(centos|altarch)>/<release:re:[6789](\.[0-9.]+)?>/<filetype:re:(isos|images)>/<arch:re:(x86_64|aarch64|armhfp|i386|power9|ppc64(le)?)/?><filename:re:[-A-Za-z0-9._]*>')
+def home(branch, release, filetype, arch, filename):
   ip=request.remote_route[-1]
   cc=request.query.cc
   debug=request.query.debug
@@ -58,9 +58,9 @@ def home(branch, release, arch, filename):
 
   # make sure the request is valid by checking if there is a fallback file (there should always be one)
   if len(filename) > 0:
-    mirrorlist_fallback = 'ipv4/%s/%s/isos/%s/%s.fallback' % (branch, release, arch, filename)
+    mirrorlist_fallback = 'ipv4/%s/%s/%s/%s/%s.fallback' % (branch, release, filetype, arch, filename)
   else:
-    mirrorlist_fallback = 'ipv4/%s/%s/isos/%s/iso.fallback' % (branch, release, arch)
+    mirrorlist_fallback = 'ipv4/%s/%s/%s/%s/iso.fallback' % (branch, release, filetype, arch)
 
   if not os.path.isfile('views/%s' % (mirrorlist_fallback)):
     response.status=404
@@ -109,9 +109,9 @@ Packaged copies of various torrent clients for CentOS can be found in the reposi
     c = countrylist[i]
 
     if len(filename) > 0:
-      mirrorlist_file = 'ipv4/%s/%s/isos/%s/%s.%s' % (branch, release, arch, filename, c)
+      mirrorlist_file = 'ipv4/%s/%s/%s/%s/%s.%s' % (branch, release, filetype, arch, filename, c)
     else:
-      mirrorlist_file = 'ipv4/%s/%s/isos/%s/iso.%s' % (branch, release, arch, c)
+      mirrorlist_file = 'ipv4/%s/%s/%s/%s/iso.%s' % (branch, release, filetype, arch, c)
 
     try:
       if os.path.isfile('views/%s' % (mirrorlist_file)):
