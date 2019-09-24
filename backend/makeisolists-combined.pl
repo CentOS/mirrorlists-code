@@ -34,7 +34,7 @@ my %month = ( 0 => "Jan", 1 => "Feb", 2 => "Mar", 3 => "Apr", 4 => "May", 5 => "
        6 => "Jul", 7 => "Aug", 8 => "Sep", 9 => "Oct", 10 => "Nov", 11 => "Dec");
 
 my ($release, $altarch, $archlist) = @ARGV;
-if(!defined($release) || $release !~ /^[6789]\.[0-9.]+$/ 
+if(!defined($release) || $release !~ /^[6789]\.[0-9.]+$|^8-stream/ 
 		|| !defined($altarch) || $altarch !~ /^(centos|altarch)$/
 		|| !defined($archlist) ) {
 	print("Usage: $0 centosversion (centos|altarch) arch1,arch2,...\n");

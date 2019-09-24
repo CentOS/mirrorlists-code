@@ -27,7 +27,7 @@ except:
   # this is only a "nice to have" list
   pass
 
-@route('/<branch:re:(centos|altarch)>/<release:re:[6789](\.[0-9.]+)?>/<filetype:re:(isos|images)>/<arch:re:(x86_64|aarch64|armhfp|i386|power9|ppc64(le)?)/?><filename:re:[-A-Za-z0-9._]*>')
+@route('/<branch:re:(centos|altarch)>/<release:re:8-stream|[6789](\.[0-9.]+)?>/<filetype:re:(isos|images)>/<arch:re:(x86_64|aarch64|armhfp|i386|power9|ppc64(le)?)/?><filename:re:[-A-Za-z0-9._]*>')
 def home(branch, release, filetype, arch, filename):
   ip=request.remote_route[-1]
   cc=request.query.cc
@@ -163,6 +163,12 @@ def nothere(pth):
   return template("isoredirect.tpl", content="\
 To use the CentOS ISO Redirect Service, please include the directory in the URL. Some examples:<br><br>\n\
 <table border=0>\n\
+<tr><td><b><a href='/centos/8-stream/isos/x86_64/'>http://isoredirect.centos.org/centos/8-stream/isos/x86_64/</a></b></td><td>for CentOS Stream x86_64 iso images</td></tr>\n\
+<tr><td><b><a href='/centos/8/isos/x86_64/'>http://isoredirect.centos.org/centos/8/isos/x86_64/</a></b></td><td>for CentOS 8 x86_64 iso images</td></tr>\n\
+<tr><td><b><a href='/centos/8-stream/isos/aarch64/'>http://isoredirect.centos.org/centos/8-stream/isos/aarch64/</a></b></td><td>for CentOS Stream aarch64 iso images</td></tr>\n\
+<tr><td><b><a href='/centos/8/isos/aarch64/'>http://isoredirect.centos.org/centos/8/isos/aarch64/</a></b></td><td>for CentOS 8 aarch64 iso images</td></tr>\n\
+<tr><td><b><a href='/centos/8-stream/isos/ppc64le/'>http://isoredirect.centos.org/centos/8-stream/isos/ppc64le/</a></b></td><td>for CentOS Stream x86_64 iso images</td></tr>\n\
+<tr><td><b><a href='/centos/8/isos/ppc64le/'>http://isoredirect.centos.org/centos/8/isos/ppc64le/</a></b></td><td>for CentOS 8 ppc64le iso images</td></tr>\n\
 <tr><td><b><a href='/centos/7/isos/x86_64/'>http://isoredirect.centos.org/centos/7/isos/x86_64/</a></b></td><td>for CentOS 7 x86_64 iso images</td></tr>\n\
 <tr><td><b><a href='/altarch/7/isos/aarch64/'>http://isoredirect.centos.org/altarch/7/isos/aarch64/</a></b></td><td>for CentOS 7 AltArch AArch64 iso images</td></tr>\n\
 <tr><td><b><a href='/altarch/7/isos/armhfp/'>http://isoredirect.centos.org/altarch/7/isos/armhfp/</a></b></td><td>for CentOS 7 AltArch armhfp disk images</td></tr>\n\
