@@ -63,8 +63,8 @@ open (LOG, ">$logfile" ) || warn ("cannot open $logfile");
 my $cfg;
 if( -r $ENV{"HOME"} . "/centos-ml.cfg" ) {
 	$cfg = new Config::Simple($ENV{"HOME"} . "/centos-ml.cfg");
-} elsif( -r "/etc/centos-ml.cfg" ) {
-	$cfg = new Config::Simple("/etc/centos-ml.cfg");
+} elsif( -r "/etc/mirmon/centos-ml.cfg" ) {
+	$cfg = new Config::Simple("/etc/mirmon/centos-ml.cfg");
 } else {
 	die("Can't read centos-ml.cfg");
 }
