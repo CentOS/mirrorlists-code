@@ -167,7 +167,7 @@ To use the CentOS ISO Redirect Service, please include the directory in the URL.
 <tr><td><b><a href='/centos/8/isos/x86_64/'>http://isoredirect.centos.org/centos/8/isos/x86_64/</a></b></td><td>for CentOS 8 x86_64 iso images</td></tr>\n\
 <tr><td><b><a href='/centos/8-stream/isos/aarch64/'>http://isoredirect.centos.org/centos/8-stream/isos/aarch64/</a></b></td><td>for CentOS Stream aarch64 iso images</td></tr>\n\
 <tr><td><b><a href='/centos/8/isos/aarch64/'>http://isoredirect.centos.org/centos/8/isos/aarch64/</a></b></td><td>for CentOS 8 aarch64 iso images</td></tr>\n\
-<tr><td><b><a href='/centos/8-stream/isos/ppc64le/'>http://isoredirect.centos.org/centos/8-stream/isos/ppc64le/</a></b></td><td>for CentOS Stream x86_64 iso images</td></tr>\n\
+<tr><td><b><a href='/centos/8-stream/isos/ppc64le/'>http://isoredirect.centos.org/centos/8-stream/isos/ppc64le/</a></b></td><td>for CentOS Stream ppc64le iso images</td></tr>\n\
 <tr><td><b><a href='/centos/8/isos/ppc64le/'>http://isoredirect.centos.org/centos/8/isos/ppc64le/</a></b></td><td>for CentOS 8 ppc64le iso images</td></tr>\n\
 <tr><td><b><a href='/centos/7/isos/x86_64/'>http://isoredirect.centos.org/centos/7/isos/x86_64/</a></b></td><td>for CentOS 7 x86_64 iso images</td></tr>\n\
 <tr><td><b><a href='/altarch/7/isos/aarch64/'>http://isoredirect.centos.org/altarch/7/isos/aarch64/</a></b></td><td>for CentOS 7 AltArch AArch64 iso images</td></tr>\n\
