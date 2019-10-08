@@ -33,11 +33,18 @@ my $max_master_cache_days = 7;
 my @all_continents = ("af", "ap", "eu", "oc", "sa", "us");
 
 my ($release, $altarch) = @ARGV;
-if(!defined($release) || $release !~ /^[6789]\.[0-9.]+$/ || !defined($altarch) || $altarch !~ /^(centos|altarch)$/) {
+if(!defined($release) || $release !~ /^[6789]\.[0-9.]+$|^8-stream/ || !defined($altarch) || $altarch !~ /^(centos|altarch)$/) {
 	print("Usage: $0 centosversion (centos|altarch)\n");
 	exit;
 }
+
 my $majorrelease = substr($release,0,1);
+# Specific workaround for the major release int vs string issue
+if($release eq "8-stream") {
+	$majorrelease = "8-stream";
+	print("8-stream detected so using $majorrelease for mysql query\n");
+} 
+
 if($altarch eq "altarch") {
 	$altarch_where = "AND altarch='yes'";
 	$centos_or_altarch = "altarch";
@@ -148,8 +155,9 @@ foreach my $ipver ("ipv4", "ipv6") {
 	# but we can keep timeoutmirrors -- if a mirror had problems with IPv4, it likely has problems with IPv6 as well
 
 	# find enabled repositories
+	print("doing now the mysql query with major_release='$majorrelease' and altarch=$altarch\n");
 	my $repores = $db->prepare("SELECT * FROM repos
-			WHERE enabled='yes' AND major_release=$majorrelease AND altarch=$altarch
+			WHERE enabled='yes' AND major_release='$majorrelease' AND altarch=$altarch
 			ORDER BY rand();");
 	$repores->execute();
 	while(my $reporef = $repores->fetchrow_hashref()) {
