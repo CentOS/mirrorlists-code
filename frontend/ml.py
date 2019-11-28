@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import unicode_literals
 import bottle
 from bottle import route, run, request, abort, template, response
 from bottle import PasteServer
@@ -6,14 +7,21 @@ from time import sleep
 import os
 import geoip2.database
 import ipaddr
+import ipaddress
 import json
 
 # Json file holding all repositories/paths
-repo_file = '/var/lib/centos-mirrorlist/views/repos.json'
 geodb = geoip2.database.Reader('/usr/share/GeoIP/GeoLite2-City.mmdb')
+repo_file = '/var/lib/centos-mirrorlist/views/repos.json'
+# If we can identify cloud provider subnet and which ones we current support
+cloud_providers = ['ec2']
+clouds_subnets_file = '/var/lib/centos-mirrorlist/clouds_subnets.json'
 
 with open(repo_file) as repos:
   paths = json.load(repos)
+
+with open(clouds_subnets_file) as clouds_subnets:
+  providers_subnets = json.load(clouds_subnets)
 
 @route('/')
 def home():
@@ -34,6 +42,16 @@ def home():
     return 'repo not specified\n'
   if not release:
     return 'release not specified\n'
+
+  # Checking first if we're coming from known cloud provider and if so, not using geoip
+  for provider in cloud_providers:
+    for subnet in providers_subnets[provider][ipver]:
+      if ipaddress.ip_address(remote_ip) in ipaddress.ip_network(subnet):
+        mirrorlist = ""
+        for baseurl in providers_subnets[provider]['baseurl']:
+          mirrorlist += '%s/%s/%s/%s/\n' % (baseurl,paths[release][repo][arch]["branch"], release, paths[release][repo][arch]["path"])
+        return mirrorlist
+        break
 
   if len(cc) > 0:
     country = cc
