@@ -5,23 +5,32 @@ import json
 # Some variables and cloud providers we supports for mirrors
 cloud_providers = ['ec2']
 
+# Let's start a staging directory first
+
+staging = {}
+
 # Let start with AWS
-aws_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()
-aws_sync_token = aws_ranges['syncToken']
+try:
+  aws_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()
+except:
+  print 'Error downloading ip-ranges.json from ams, exiting ..'
+  exit(1)
+staging['ec2'] = {}
+staging['ec2']['sync_token'] = aws_ranges['syncToken']
 aws_ipv4_ranges = aws_ranges['prefixes']
 aws_ipv6_ranges = aws_ranges['ipv6_prefixes']
 
-ec2_ipv4_subnets = [item['ip_prefix'] for item in aws_ipv4_ranges if item["service"] == "EC2"]
-ec2_ipv6_subnets = [item['ipv6_prefix'] for item in aws_ipv6_ranges if item["service"] == "EC2"]
-ec2_mirrors = [ 'mirror1.aws.centos.org', 'mirror2.aws.centos.org' ]
+staging['ec2']['ipv4'] = [item['ip_prefix'] for item in aws_ipv4_ranges if item["service"] == "EC2"]
+staging['ec2']['ipv6'] = [item['ipv6_prefix'] for item in aws_ipv6_ranges if item["service"] == "EC2"]
+staging['ec2']['baseurl'] = [ 'mirror1.aws.centos.org', 'mirror2.aws.centos.org' ]
 
 cloud_subnets = {}
 for provider in cloud_providers:
   cloud_subnets[provider] = {}
-  cloud_subnets[provider]['sync_token'] = aws_sync_token
-  cloud_subnets[provider]['ipv4'] = ec2_ipv4_subnets
-  cloud_subnets[provider]['ipv6'] = ec2_ipv6_subnets
-  cloud_subnets[provider]['baseurl'] = ec2_mirrors
+  cloud_subnets[provider]['sync_token'] = staging[provider]['sync_token']
+  cloud_subnets[provider]['ipv4'] = staging[provider]['ipv4']
+  cloud_subnets[provider]['ipv6'] = staging[provider]['ipv6']
+  cloud_subnets[provider]['baseurl'] = staging[provider]['baseurl']
 
 f = open('clouds_subnets.json', 'w')
 f.write(json.dumps(cloud_subnets, indent=2))
