@@ -48,9 +48,12 @@ def home():
     for subnet in providers_subnets[provider][ipver]:
       if ipaddress.ip_address(remote_ip) in ipaddress.ip_network(subnet):
         mirrorlist = ""
-        for baseurl in providers_subnets[provider]['baseurl']:
-          mirrorlist += '%s/%s/%s/%s/\n' % (baseurl,paths[release][repo][arch]["branch"], release, paths[release][repo][arch]["path"])
-        return mirrorlist
+        try:
+          for baseurl in providers_subnets[provider]['baseurl']:
+            mirrorlist += '%s/%s/%s/%s/\n' % (baseurl,paths[release][repo][arch]["branch"], release, paths[release][repo][arch]["path"])
+          return mirrorlist
+        except:
+          return 'Invalid release/repo/arch combination\n'
         break
 
   if len(cc) > 0:
