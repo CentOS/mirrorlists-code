@@ -103,9 +103,6 @@ foreach my $arch (shuffle @arches) {
 	my $filetype = "isos";
 	my $checksumfilename = "sha256sum.txt";
 	if($release !~ /^[67]/) {
-		if($arch eq "armhfp") {
-			$filetype = "images";
-		}
 		$checksumfilename = "CHECKSUM";
 	}
 	my $isourl = "$release/$filetype/$arch/";
