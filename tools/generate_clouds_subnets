@@ -22,7 +22,7 @@ aws_ipv6_ranges = aws_ranges['ipv6_prefixes']
 
 staging['ec2']['ipv4'] = [item['ip_prefix'] for item in aws_ipv4_ranges if item["service"] == "EC2"]
 staging['ec2']['ipv6'] = [item['ipv6_prefix'] for item in aws_ipv6_ranges if item["service"] == "EC2"]
-staging['ec2']['baseurl'] = [ 'mirror1.aws.centos.org', 'mirror2.aws.centos.org' ]
+staging['ec2']['baseurl'] = [ 'd36uatko69830t.cloudfront.net' ]
 
 cloud_subnets = {}
 for provider in cloud_providers:
