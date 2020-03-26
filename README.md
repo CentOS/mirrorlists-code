@@ -30,6 +30,7 @@ The following items are needed for the mirrorlist/isoredirect service:
  * python-bottle to run the {ml,isoredirect}.py code for various instances
  * Maxmind Geolite2 database : [City version](https://dev.maxmind.com/geoip/geoip2/geolite2/)
  * python-geoip2 pkg (to consume those Geolite2 DB)
+ * python-memcached (to cache results for GeoIP/Cloud providers)
  * For each worker, a specific instance/port can be initialized and added to Apache config for the proxy-balancer (see frontend/systemd/centos-ml-worker@.service)
 
 Those services (mirrorlist/isoredirect) just consume mirrorlist files, pushed to those nodes, and updated in loop by the Crawler process (see Backend section above)
@@ -37,6 +38,8 @@ Those services (mirrorlist/isoredirect) just consume mirrorlist files, pushed to
 When a request is made to the service, the python script :
  
  * checks for IPv4 or IPv6 connectivity
+ * checks if IP is in memcached (for country/cloud provider)
+ * searches if IP is from cloud provider
  * computes Geolocation based on the origin IP
  * searches for validated mirrors in the same country/state for the request arch/repo/release
  * returns such list
