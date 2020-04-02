@@ -10,7 +10,7 @@ import time
 geodb = geoip2.database.Reader('/usr/share/GeoIP/GeoLite2-City.mmdb')
 
 # list of cli tools for which we'll just directly redirect instead of giving a list
-cli_user_agents= [ 'curl', 'wget', 'packer', 'ansible-httpget' ]
+cli_user_agents= [ 'curl', 'wget', 'go-http-client', 'ansible-httpget' ]
 
 # Json file holding the nearby countries list, generated from geo_cc.pm with convert_ccgroups_to_json.pl
 with open('ccgroups.json') as ccgroupjson:
